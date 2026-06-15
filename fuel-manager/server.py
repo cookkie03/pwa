@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Fuel Manager — minimal HTTP server with REST API + static file serving."""
+"""Fuel Manager — HTTPS server with REST API + static file serving."""
 
 import json
 import os
+import ssl
 import threading
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from datetime import datetime
@@ -10,8 +11,8 @@ from datetime import datetime
 PORT = 8599
 DATA_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_FILE = os.path.join(DATA_DIR, "dati.json")
+CERT_FILE = os.path.join(DATA_DIR, "server.pem")
 
-# Default data structure
 DEFAULT_DATA = {
     "persone": [
         "Luca", "Marco", "Daniel De Leo", "Federico Vessio", "Rebecca Fato",
@@ -46,6 +47,43 @@ def save_data(data):
             json.dump(data, f, ensure_ascii=False, indent=2)
 
 
+def generate_self_signed_cert():
+    """Generate a self-signed cert for both DuckDNS and TailScale domains."""
+    if os.path.exists(CERT_FILE):
+        return
+    from subprocess import run, PIPE
+    # Create OpenSSL config with SANs
+    san_conf = os.path.join(DATA_DIR, "san.cnf")
+    with open(san_conf, "w") as f:
+        f.write("""[req]
+distinguished_name = req_dn
+x509_extensions = v3_req
+prompt = no
+
+[req_dn]
+CN = tradingagents.duckdns.org
+
+[v3_req]
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1 = tradingagents.duckdns.org
+DNS.2 = debian.tail234659.ts.net
+DNS.3 = trading.lucamanca.synology.me
+IP.1 = 100.74.207.0
+IP.2 = 192.168.1.80
+""")
+    run([
+        "openssl", "req", "-x509", "-nodes", "-days", "365",
+        "-newkey", "rsa:2048",
+        "-keyout", CERT_FILE,
+        "-out", CERT_FILE,
+        "-config", san_conf
+    ], check=True, capture_output=True)
+    os.remove(san_conf)
+    print(f"Generated self-signed cert: {CERT_FILE}")
+
+
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=DATA_DIR, **kwargs)
@@ -67,23 +105,13 @@ class Handler(SimpleHTTPRequestHandler):
         else:
             self._json_response({"error": "not found"}, 404)
 
-    def do_PUT(self):
-        if self.path == "/api/data" or self.path == "/api/data/":
-            length = int(self.headers.get("Content-Length", 0))
-            body = self.rfile.read(length)
-            data = json.loads(body)
-            save_data(data)
-            self._json_response({"ok": True})
-        else:
-            self._json_response({"error": "not found"}, 404)
-
     def _json_response(self, obj, code=200):
         payload = json.dumps(obj, ensure_ascii=False).encode("utf-8")
         self.send_response(code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(payload)))
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
         self.wfile.write(payload)
@@ -91,12 +119,11 @@ class Handler(SimpleHTTPRequestHandler):
     def do_OPTIONS(self):
         self.send_response(204)
         self.send_header("Access-Control-Allow-Origin", "*")
-        self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
 
     def log_message(self, format, *args):
-        # Quieter logging
         pass
 
 
@@ -131,7 +158,6 @@ if __name__ == "__main__":
                         if kw.lower() in str(h).lower(): return i
                 return -1
 
-            # Tragitti
             ws = wb["Tragitti"]
             h = [cv(c.value) for c in list(ws.iter_rows(min_row=1, max_row=1))[0]]
             di = fc(h, ["data"]); dk = fc(h, ["km", "tragitto"]); dc = fc(h, ["consumo"])
@@ -150,7 +176,6 @@ if __name__ == "__main__":
                     "coeffKm": round(tot / km if km > 0 else 0, 6),
                 })
 
-            # Benzina
             ws = wb["Benzina"]
             h = [cv(c.value) for c in list(ws.iter_rows(min_row=1, max_row=1))[0]]
             di = fc(h, ["data"]); ds = fc(h, ["spesa"]); dco = fc(h, ["costo"])
@@ -166,7 +191,6 @@ if __name__ == "__main__":
                     "litri": round(litri, 2), "mese": mese,
                 })
 
-            # Restituzioni
             ws = wb["Restituzioni"]
             rn = [cv(c.value) for c in list(ws.iter_rows(min_row=2, max_row=2))[0]]
             nomi_r = []; cir = {}
@@ -182,7 +206,6 @@ if __name__ == "__main__":
                     if v != 0: det[nome] = round(v, 2); tot += v
                 if tot > 0: restituzioni.append({"data": data, "totale": round(tot, 2), "dettaglio": det})
 
-            # Spese
             ws = wb["Spese"]
             sn = [cv(c.value) for c in list(ws.iter_rows(min_row=2, max_row=2))[0]]
             nomi_s = []; cis = {}
@@ -207,6 +230,16 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Seed error: {e}")
 
+    # Generate self-signed cert
+    generate_self_signed_cert()
+
+    # Create HTTPS server
     server = HTTPServer(("0.0.0.0", PORT), Handler)
-    print(f"Fuel Manager running on http://0.0.0.0:{PORT}")
+    ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    ctx.load_cert_chain(CERT_FILE)
+    server.socket = ctx.wrap_socket(server.socket, server_side=True)
+
+    print(f"Fuel Manager HTTPS running on https://0.0.0.0:{PORT}")
+    print(f"  → https://debian.tail234659.ts.net:{PORT}")
+    print(f"  → https://tradingagents.duckdns.org:{PORT}")
     server.serve_forever()
