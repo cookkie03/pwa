@@ -1,0 +1,12 @@
+# Dati sensibili
+dati.json
+*.key
+*.pem
+*.secret
+.env
+.env.*
+
+# Icone generate (non necessarie in repo)
+icon-192.png
+icon-512.png
+icon.svg
