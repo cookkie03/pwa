@@ -61,15 +61,14 @@ x509_extensions = v3_req
 prompt = no
 
 [req_dn]
-CN = tradingagents.duckdns.org
+CN = debian.tail234659.ts.net
 
 [v3_req]
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = tradingagents.duckdns.org
-DNS.2 = debian.tail234659.ts.net
-DNS.3 = trading.lucamanca.synology.me
+DNS.1 = debian.tail234659.ts.net
+DNS.2 = debian
 IP.1 = 100.74.207.0
 IP.2 = 192.168.1.80
 """)
@@ -236,7 +235,7 @@ if __name__ == "__main__":
     # Create HTTPS server
     server = HTTPServer(("0.0.0.0", PORT), Handler)
     ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    ctx.load_cert_chain(CERT_FILE)
+    ctx.load_cert_chain(CERT_FILE, os.path.join(DATA_DIR, "server.key"))
     server.socket = ctx.wrap_socket(server.socket, server_side=True)
 
     print(f"Fuel Manager HTTPS running on https://0.0.0.0:{PORT}")
