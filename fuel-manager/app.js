@@ -17,7 +17,6 @@ const PERSONE_DEFAULT = [
   'Zoe Nastrino', 'Serena Malusardi', 'Naike Maldifassi', 'Simone Carcano'
 ];
 
-// --- Stato applicazione ---
 let state = loadState();
 
 function defaultState() {
@@ -30,13 +29,32 @@ function defaultState() {
   };
 }
 
+async function seedFromJSON() {
+  try {
+    const resp = await fetch('dati.json');
+    if (!resp.ok) return false;
+    const data = await resp.json();
+    if (data.persone && data.persone.length > 0) {
+      state.persone = data.persone;
+    }
+    if (data.tragitti) state.tragitti = data.tragitti;
+    if (data.benzina) state.benzina = data.benzina;
+    if (data.restituzioni) state.restituzioni = data.restituzioni;
+    if (data.spese) state.spese = data.spese;
+    return true;
+  } catch (e) { return false; }
+}
+
 function loadState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const s = JSON.parse(raw);
-      // Assicura che persone esista
       if (!s.persone || s.persone.length === 0) s.persone = [...PERSONE_DEFAULT];
+      // Se localStorage è vuoto (nessun dato), ritorna default per allow seeding
+      if (s.tragitti.length === 0 && s.benzina.length === 0 && s.spese.length === 0 && s.restituzioni.length === 0) {
+        return defaultState();
+      }
       return s;
     }
   } catch (e) { /* ignore */ }
@@ -792,12 +810,20 @@ function renderAll() {
   renderPersonInputs();
 }
 
-renderAll();
-document.querySelector('#form-tragitto input[name="data"]').value = todayISO();
-document.querySelector('#form-benzina input[name="data"]').value = todayISO();
-document.querySelector('#form-restituzione input[name="data"]').value = todayISO();
-document.querySelector('#form-spesa input[name="data"]').value = todayISO();
-updateStatus(`${state.tragitti.length} tragitti · ${state.benzina.length} rifornimenti · ${state.persone.length} persone`);
+async function init() {
+  const seeded = await seedFromJSON();
+  if (seeded) {
+    saveState(); // Salva i dati seedati in localStorage
+  }
+  renderAll();
+  document.querySelector('#form-tragitto input[name="data"]').value = todayISO();
+  document.querySelector('#form-benzina input[name="data"]').value = todayISO();
+  document.querySelector('#form-restituzione input[name="data"]').value = todayISO();
+  document.querySelector('#form-spesa input[name="data"]').value = todayISO();
+  updateStatus(`${state.tragitti.length} tragitti · ${state.benzina.length} rifornimenti · ${state.persone.length} persone`);
+}
+
+init();
 
 // ============================================================
 // SERVICE WORKER (PWA)
