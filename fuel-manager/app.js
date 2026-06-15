@@ -29,39 +29,51 @@ function defaultState() {
   };
 }
 
-async function seedFromJSON() {
+const API = '/api/data';
+
+async function apiGet() {
   try {
-    const resp = await fetch('dati.json');
-    if (!resp.ok) return false;
-    const data = await resp.json();
-    if (data.persone && data.persone.length > 0) {
-      state.persone = data.persone;
-    }
-    if (data.tragitti) state.tragitti = data.tragitti;
-    if (data.benzina) state.benzina = data.benzina;
-    if (data.restituzioni) state.restituzioni = data.restituzioni;
-    if (data.spese) state.spese = data.spese;
+    const r = await fetch(API);
+    if (r.ok) return await r.json();
+  } catch(e) {}
+  return null;
+}
+
+async function apiSave() {
+  try {
+    await fetch(API, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(state)
+    });
+  } catch(e) { updateStatus('Errore salvataggio!'); }
+}
+
+async function seedFromAPI() {
+  const data = await apiGet();
+  if (data && (data.tragitti?.length > 0 || data.benzina?.length > 0)) {
+    state = data;
     return true;
-  } catch (e) { return false; }
+  }
+  return false;
 }
 
 function loadState() {
+  // Sync load — will be replaced by async init()
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const s = JSON.parse(raw);
       if (!s.persone || s.persone.length === 0) s.persone = [...PERSONE_DEFAULT];
-      // Se localStorage è vuoto (nessun dato), ritorna default per allow seeding
-      if (s.tragitti.length === 0 && s.benzina.length === 0 && s.spese.length === 0 && s.restituzioni.length === 0) {
-        return defaultState();
-      }
       return s;
     }
-  } catch (e) { /* ignore */ }
+  } catch(e) {}
   return defaultState();
 }
 
-function saveState() {
+async function saveState() {
+  await apiSave();
+  // Also keep localStorage as cache
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
   updateStatus('Dati salvati');
 }
@@ -481,7 +493,7 @@ function renderInfo() {
 // ============================================================
 
 // Import CSV
-document.getElementById('form-import').addEventListener('submit', e => {
+document.getElementById('form-import').addEventListener('submit', async e => {
   e.preventDefault();
   const f = e.target;
   const foglio = f.foglio.value;
@@ -585,7 +597,7 @@ document.getElementById('form-import').addEventListener('submit', e => {
     }
   }
 
-  saveState();
+  await saveState();
   renderAll();
   f.reset();
   updateStatus(`Importati ${imported} record dal foglio ${foglio}`);
@@ -789,10 +801,10 @@ function downloadFile(content, filename, mimeType) {
 }
 
 // Reset
-document.getElementById('btn-reset').addEventListener('click', () => {
+document.getElementById('btn-reset').addEventListener('click', async () => {
   if (confirm('Eliminare TUTTI i dati? Questa azione è irreversibile.')) {
     state = defaultState();
-    saveState();
+    await saveState();
     renderAll();
     updateStatus('Dati resettati');
   }
@@ -811,9 +823,10 @@ function renderAll() {
 }
 
 async function init() {
-  const seeded = await seedFromJSON();
-  if (seeded) {
-    saveState(); // Salva i dati seedati in localStorage
+  const seeded = await seedFromAPI();
+  if (!seeded) {
+    // No server data yet — use localStorage cache or defaults
+    state = loadState();
   }
   renderAll();
   document.querySelector('#form-tragitto input[name="data"]').value = todayISO();
