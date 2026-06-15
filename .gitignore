@@ -6,6 +6,16 @@ dati.json
 .env
 .env.*
 
+# Certificati e profili (generati localmente)
+*.crt
+*.csr
+*.srl
+*.mobileconfig
+ca.srl
+server.csr
+apple-cert-mobileconfig
+fuel-manager-ca.mobileconfig
+
 # Icone generate (non necessarie in repo)
 icon-192.png
 icon-512.png

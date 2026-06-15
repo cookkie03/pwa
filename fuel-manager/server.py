@@ -52,34 +52,11 @@ def generate_self_signed_cert():
     if os.path.exists(CERT_FILE):
         return
     from subprocess import run, PIPE
-    # Create OpenSSL config with SANs
-    san_conf = os.path.join(DATA_DIR, "san.cnf")
-    with open(san_conf, "w") as f:
-        f.write("""[req]
-distinguished_name = req_dn
-x509_extensions = v3_req
-prompt = no
-
-[req_dn]
-CN = debian.tail234659.ts.net
-
-[v3_req]
-subjectAltName = @alt_names
-
-[alt_names]
-DNS.1 = debian.tail234659.ts.net
-DNS.2 = debian
-IP.1 = 100.74.207.0
-IP.2 = 192.168.1.80
-""")
-    run([
-        "openssl", "req", "-x509", "-nodes", "-days", "365",
-        "-newkey", "rsa:2048",
-        "-keyout", CERT_FILE,
-        "-out", CERT_FILE,
-        "-config", san_conf
-    ], check=True, capture_output=True)
-    os.remove(san_conf)
+    crt = os.path.join(DATA_DIR, "debian.tail234659.ts.net.crt")
+    key = os.path.join(DATA_DIR, "debian.tail234659.ts.net.key")
+    run(["tailscale", "cert", "debian.tail234659.ts.net",
+         "--cert-file", crt, "--key-file", key],
+        check=True, capture_output=True)
     print(f"Generated self-signed cert: {CERT_FILE}")
 
 
@@ -235,10 +212,13 @@ if __name__ == "__main__":
     # Create HTTPS server
     server = HTTPServer(("0.0.0.0", PORT), Handler)
     ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    ctx.load_cert_chain(CERT_FILE, os.path.join(DATA_DIR, "server.key"))
+    # Use the full chain cert from tailscale
+    ctx.load_cert_chain(
+        os.path.join(DATA_DIR, "debian.tail234659.ts.net.crt"),
+        os.path.join(DATA_DIR, "debian.tail234659.ts.net.key")
+    )
     server.socket = ctx.wrap_socket(server.socket, server_side=True)
 
     print(f"Fuel Manager HTTPS running on https://0.0.0.0:{PORT}")
     print(f"  → https://debian.tail234659.ts.net:{PORT}")
-    print(f"  → https://tradingagents.duckdns.org:{PORT}")
     server.serve_forever()
