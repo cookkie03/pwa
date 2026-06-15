@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1a73e8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Gestione Benzina - Tragitti, Consumi, Spese e Restituzioni">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <title>Gestione Benzina</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>⛽ Gestione Benzina</h1>
+    <nav id="tabs">
+      <button class="tab active" data-tab="tragitti">Tragitti</button>
+      <button class="tab" data-tab="benzina">Benzina</button>
+      <button class="tab" data-tab="restituzioni">Restituzioni</button>
+      <button class="tab" data-tab="spese">Spese</button>
+      <button class="tab" data-tab="info">Info</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- TRAGITTI -->
+    <section id="tragitti" class="tab-content active">
+      <h2>Tragitti</h2>
+      <form id="form-tragitto">
+        <div class="form-grid">
+          <label>Data <input type="date" name="data" required></label>
+          <label>KM <input type="number" name="km" step="0.1" required></label>
+          <label>Consumo (l/100km) <input type="number" name="consumo" step="0.1" required></label>
+          <label>Costo carburante (€/l) <input type="number" name="costoCarburante" step="0.001" required></label>
+          <label>N. Persone <input type="number" name="persone" step="0.5" min="1" value="1" required></label>
+          <label>Costi aggiuntivi (€) <input type="number" name="costiAgg" step="0.01" value="0"></label>
+        </div>
+        <div class="form-actions">
+          <button type="submit">Aggiungi tragitto</button>
+        </div>
+      </form>
+
+      <div class="table-wrapper">
+        <table id="tabella-tragitti">
+          <thead>
+            <tr>
+              <th>Data</th><th>KM</th><th>l/100km</th><th>€/l</th><th>Persone</th>
+              <th>Totale</th><th>Tot/testa</th><th>Coeff/km</th><th>Incongr.</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- BENZINA -->
+    <section id="benzina" class="tab-content">
+      <h2>Benzina</h2>
+      <form id="form-benzina">
+        <div class="form-grid">
+          <label>Data <input type="date" name="data" required></label>
+          <label>Spesa (€) <input type="number" name="spesa" step="0.01" required></label>
+          <label>Costo carburante (€/l) <input type="number" name="costoCarburante" step="0.001" required></label>
+          <label>Litri <input type="number" name="litri" step="0.01" required></label>
+          <label>Mese riferimento <input type="text" name="mese" placeholder="gen-25" required></label>
+        </div>
+        <div class="form-actions">
+          <button type="submit">Aggiungi rifornimento</button>
+        </div>
+      </form>
+
+      <div class="table-wrapper">
+        <table id="tabella-benzina">
+          <thead>
+            <tr>
+              <th>Data</th><th>Spesa</th><th>€/l</th><th>Litri</th><th>Mese</th><th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RESTITUZIONI -->
+    <section id="restituzioni" class="tab-content">
+      <h2>Restituzioni</h2>
+      <div class="subsection">
+        <h3>Persone</h3>
+        <form id="form-persona">
+          <div class="form-grid">
+            <label>Nome persona <input type="text" name="nome" required></label>
+          </div>
+          <div class="form-actions">
+            <button type="submit">Aggiungi persona</button>
+          </div>
+        </form>
+        <div id="lista-persone" class="person-tags"></div>
+      </div>
+
+      <div class="subsection">
+        <h3>Voce restituzione</h3>
+        <form id="form-restituzione">
+          <div class="form-grid">
+            <label>Data <input type="date" name="data" required></label>
+            <label>Totale entrate (€) <input type="number" name="totale" step="0.01" value="0"></label>
+            <label>Dividi per tutti <input type="checkbox" name="dividiTutti" checked></label>
+            <div class="colspan-2" id="restituzione-persone">
+              <!-- generato dinamicamente -->
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit">Aggiungi restituzione</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="table-wrapper">
+        <table id="tabella-restituzioni">
+          <thead>
+            <tr>
+              <th>Data</th><th>Totale</th><th>Dettaglio per persona</th><th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SPESE -->
+    <section id="spese" class="tab-content">
+      <h2>Spese a persona</h2>
+      <form id="form-spesa">
+        <div class="form-grid">
+          <label>Data <input type="date" name="data" required></label>
+          <label>Totale spesa (€) <input type="number" name="totale" step="0.01" required></label>
+          <div class="colspan-2" id="spese-persone">
+            <!-- generato dinamicamente -->
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit">Aggiungi spesa</button>
+        </div>
+      </form>
+
+      <div class="table-wrapper">
+        <table id="tabella-spese">
+          <thead>
+            <tr>
+              <th>Data</th><th>Totale</th><th>Dettaglio per persona</th><th></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- INFO -->
+    <section id="info" class="tab-content">
+      <h2>Riepilogo</h2>
+      <div id="info-riepilogo" class="info-grid"></div>
+
+      <h3>Importa dati da Google Sheet</h3>
+      <p class="hint">Incolla i dati CSV esportati dai fogli Google per popolare l'app.</p>
+      <form id="form-import">
+        <div class="form-grid">
+          <label>Foglio
+            <select name="foglio">
+              <option value="tragitti">Tragitti</option>
+              <option value="benzina">Benzina</option>
+              <option value="restituzioni">Restituzioni</option>
+              <option value="spese">Spese</option>
+            </select>
+          </label>
+          <label class="colspan-2">Dati CSV (incolla qui, prima riga = intestazioni)
+            <textarea name="csvData" rows="4" placeholder="Data,KM,Consumo,..."></textarea>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button type="submit">Importa</button>
+        </div>
+      </form>
+
+      <h3>Esporta dati</h3>
+      <div class="form-actions">
+        <button id="btn-export-csv" type="button">Esporta tutto (CSV)</button>
+        <button id="btn-export-json" type="button">Esporta tutto (JSON)</button>
+        <button id="btn-reset" type="button" class="danger">Reset dati</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span id="status-bar">Pronto</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
