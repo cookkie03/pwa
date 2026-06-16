@@ -313,3 +313,50 @@ footer {
   .info-grid { grid-template-columns: 1fr; }
   th, td { padding: 6px 8px; font-size: 0.75rem; }
 }
+
+/* Person checkboxes for tragitto form */
+.person-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.person-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+}
+
+.person-checkbox:hover {
+  border-color: var(--primary);
+}
+
+.person-checkbox input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+}
+
+.person-checkbox:has(input:checked) {
+  background: #e8f0fe;
+  border-color: var(--primary);
+  color: var(--primary-dark);
+  font-weight: 500;
+}
+
+.persone-label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}

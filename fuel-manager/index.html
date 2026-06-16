@@ -34,8 +34,11 @@
           <label>KM <input type="number" name="km" step="0.1" required></label>
           <label>Consumo (l/100km) <input type="number" name="consumo" step="0.1" required></label>
           <label>Costo carburante (€/l) <input type="number" name="costoCarburante" step="0.001" required></label>
-          <label>N. Persone <input type="number" name="persone" step="0.5" min="1" value="1" required></label>
           <label>Costi aggiuntivi (€) <input type="number" name="costiAgg" step="0.01" value="0"></label>
+          <div class="colspan-2">
+            <label class="persone-label">Persone (oltre a te)</label>
+            <div id="tragitto-persone" class="person-checkboxes"></div>
+          </div>
         </div>
         <div class="form-actions">
           <button type="submit">Aggiungi tragitto</button>

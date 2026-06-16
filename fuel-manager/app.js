@@ -5,17 +5,7 @@
 const STORAGE_KEY = 'gestione-benzina-v1';
 
 // --- Persone di default (dal foglio) ---
-const PERSONE_DEFAULT = [
-  'Luca', 'Marco', 'Daniel De Leo', 'Federico Vessio', 'Rebecca Fato',
-  'Alessio Paparella', 'Matteo Sangalli', 'Giulia Pierin', 'Alice Tonoli',
-  'Ionuts Purniki', 'Leonardo Scimone', 'David Karpik', 'Filippo Sciarpa',
-  'Ilenia Boccagno', 'Giorgia Bennici', 'Sofia Vessio', 'Romina Zeza',
-  'Sonia Bertani', 'Dennis Molinari', 'Edoardo Ballarini', 'Alessia Mongiardo',
-  'Kerlins Hernandez', 'Manuel Di Lanna', 'Noemi Pianta', 'Riccardo Carissimi',
-  'Emanuele Meloni', 'Marzio Foti', 'Tommaso Signori', 'Emanuele Radice',
-  'Yuri Comelli', 'Andres Lo Monaco', 'Simone Lenoci', 'Stella Massironi',
-  'Zoe Nastrino', 'Serena Malusardi', 'Naike Maldifassi', 'Simone Carcano'
-];
+const PERSONE_DEFAULT = ["Alessia Mongiardo", "Alessio Paparella", "Alice Tonoli", "Andres Lo Monaco", "Daniel De Leo", "David Karpik", "Dennis Molinari", "Edoardo Ballarini", "Emanuele Meloni", "Emanuele Radice", "Federico Vessio", "Filippo Sciarpa", "Giorgia Bennici", "Giulia Pierin", "Ilenia Boccagno", "Ionuts Purniki", "Kerlins Hernandez", "Leonardo Scimone", "Luca", "Manuel Di Lanna", "Marco", "Marzio Foti", "Matteo Sangalli", "Noemi Pianta", "Rebecca Fato", "Riccardo Carissimi", "Romina Zeza", "Simone Lenoci", "Sofia Vessio", "Sonia Bertani", "Tommaso Signori", "Yuri Comelli", "amoremiodellamiavitalucedeimieiocchimadredeimieifiglimogliebellissimissima"];
 
 let state = loadState();
 
@@ -134,24 +124,30 @@ document.getElementById('form-tragitto').addEventListener('submit', e => {
   const km = parseFloat(f.km.value);
   const consumo = parseFloat(f.consumo.value);
   const costoCarburante = parseFloat(f.costoCarburante.value);
-  const persone = parseFloat(f.persone.value);
   const costiAgg = parseFloat(f.costiAgg.value) || 0;
 
+  // Count selected people (always includes Luca + checked others)
+  const checked = f.querySelectorAll('.tragitto-person-check:checked');
+  const personeNames = [];
+  checked.forEach(cb => personeNames.push(cb.value));
+  const personeCount = personeNames.length;
+
   const totale = (km / 100) * consumo * costoCarburante + costiAgg;
-  const totaleTesta = totale / persone;
+  const totaleTesta = personeCount > 0 ? totale / personeCount : totale;
   const coeffKm = totale / km;
 
   state.tragitti.push({
     id: Date.now(),
-    data, km, consumo, costoCarburante, persone, costiAgg,
-    totale, totaleTesta, coeffKm
+    data, km, consumo, costoCarburante, persone: personeCount, costiAgg,
+    totale, totaleTesta, coeffKm, personeNomi: personeNames
   });
 
   saveState();
   renderTragitti();
   f.reset();
   f.data.value = todayISO();
-  updateStatus('Tragitto aggiunto');
+  renderTragittoPersone();
+  updateStatus('Tragitto aggiunto (' + personeCount + ' persone)';
 });
 
 function renderTragitti() {
@@ -163,13 +159,24 @@ function renderTragitti() {
       <td>${t.km.toFixed(1)}</td>
       <td>${t.consumo.toFixed(1)}</td>
       <td>${t.costoCarburante.toFixed(3)}</td>
-      <td>${t.persone}</td>
+      <td>${t.personeNomi ? t.personeNomi.join(', ') : t.persone}</td>
       <td>${formatEuro(t.totale)}</td>
       <td>${formatEuro(t.totaleTesta)}</td>
       <td>${(t.coeffKm * 100).toFixed(1)}%</td>
       <td>${t.incongruenza || ''}</td>
       <td><button class="btn-delete" onclick="deleteTragitto(${t.id})">✕</button></td>
     </tr>
+  `).join('');
+}
+
+function renderTragittoPersone() {
+  const el = document.getElementById('tragitto-persone');
+  if (!el) return;
+  el.innerHTML = state.persone.map(p => `
+    <label class="person-checkbox">
+      <input type="checkbox" class="tragitto-person-check" value="${p.replace(/"/g, '&quot;')}" ${p === 'Luca' ? 'checked' : ''}>
+      ${p}
+    </label>
   `).join('');
 }
 
@@ -820,6 +827,7 @@ function renderAll() {
   renderSpese();
   renderPersonTags();
   renderPersonInputs();
+  renderTragittoPersone();
 }
 
 async function init() {
