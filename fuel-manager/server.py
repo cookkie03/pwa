@@ -9,9 +9,9 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 from datetime import datetime
 
 PORT = 8599
-DATA_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.environ.get("DATA_DIR", os.path.dirname(os.path.abspath(__file__)))
 DATA_FILE = os.path.join(DATA_DIR, "dati.json")
-CERT_FILE = os.path.join(DATA_DIR, "server.pem")
+CERT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "server.pem")
 
 DEFAULT_DATA = {
     "persone": [
