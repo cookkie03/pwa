@@ -1,0 +1,365 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "server.py",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "fuel_manager_server",
+      "community": 0,
+      "norm_label": "server.py"
+    },
+    {
+      "label": "load_data()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L37",
+      "_origin": "ast",
+      "id": "fuel_manager_server_load_data",
+      "community": 2,
+      "norm_label": "load_data()"
+    },
+    {
+      "label": "save_data()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "fuel_manager_server_save_data",
+      "community": 3,
+      "norm_label": "save_data()"
+    },
+    {
+      "label": "generate_self_signed_cert()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L50",
+      "_origin": "ast",
+      "id": "fuel_manager_server_generate_self_signed_cert",
+      "community": 0,
+      "norm_label": "generate_self_signed_cert()"
+    },
+    {
+      "label": "Handler",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L63",
+      "_origin": "ast",
+      "id": "fuel_manager_server_handler",
+      "community": 1,
+      "norm_label": "handler"
+    },
+    {
+      "label": "SimpleHTTPRequestHandler",
+      "file_type": "code",
+      "source_file": "",
+      "source_location": "",
+      "_origin": "ast",
+      "id": "simplehttprequesthandler",
+      "community": 1,
+      "norm_label": "simplehttprequesthandler"
+    },
+    {
+      "label": ".__init__()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L64",
+      "_origin": "ast",
+      "id": "fuel_manager_server_handler_init",
+      "community": 1,
+      "norm_label": ".__init__()"
+    },
+    {
+      "label": ".do_GET()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L67",
+      "_origin": "ast",
+      "id": "fuel_manager_server_handler_do_get",
+      "community": 2,
+      "norm_label": ".do_get()"
+    },
+    {
+      "label": ".do_POST()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L74",
+      "_origin": "ast",
+      "id": "fuel_manager_server_handler_do_post",
+      "community": 3,
+      "norm_label": ".do_post()"
+    },
+    {
+      "label": "._json_response()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "fuel_manager_server_handler_json_response",
+      "community": 2,
+      "norm_label": "._json_response()"
+    },
+    {
+      "label": ".do_OPTIONS()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L95",
+      "_origin": "ast",
+      "id": "fuel_manager_server_handler_do_options",
+      "community": 1,
+      "norm_label": ".do_options()"
+    },
+    {
+      "label": ".log_message()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L102",
+      "_origin": "ast",
+      "id": "fuel_manager_server_handler_log_message",
+      "community": 1,
+      "norm_label": ".log_message()"
+    },
+    {
+      "label": "cv()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L118",
+      "_origin": "ast",
+      "id": "fuel_manager_server_cv",
+      "community": 0,
+      "norm_label": "cv()"
+    },
+    {
+      "label": "sf()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L124",
+      "_origin": "ast",
+      "id": "fuel_manager_server_sf",
+      "community": 0,
+      "norm_label": "sf()"
+    },
+    {
+      "label": "fc()",
+      "file_type": "code",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L130",
+      "_origin": "ast",
+      "id": "fuel_manager_server_fc",
+      "community": 0,
+      "norm_label": "fc()"
+    },
+    {
+      "label": "Generate a self-signed cert for both DuckDNS and TailScale domains.",
+      "file_type": "rationale",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L51",
+      "_origin": "ast",
+      "id": "fuel_manager_server_rationale_51",
+      "community": 0,
+      "norm_label": "generate a self-signed cert for both duckdns and tailscale domains."
+    }
+  ],
+  "links": [
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L118",
+      "weight": 1.0,
+      "source": "fuel_manager_server",
+      "target": "fuel_manager_server_cv",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L130",
+      "weight": 1.0,
+      "source": "fuel_manager_server",
+      "target": "fuel_manager_server_fc",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "fuel_manager_server",
+      "target": "fuel_manager_server_generate_self_signed_cert",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "fuel_manager_server",
+      "target": "fuel_manager_server_handler",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L37",
+      "weight": 1.0,
+      "source": "fuel_manager_server",
+      "target": "fuel_manager_server_load_data",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L44",
+      "weight": 1.0,
+      "source": "fuel_manager_server",
+      "target": "fuel_manager_server_save_data",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L124",
+      "weight": 1.0,
+      "source": "fuel_manager_server",
+      "target": "fuel_manager_server_sf",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L69",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler_do_get",
+      "target": "fuel_manager_server_load_data",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L79",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler_do_post",
+      "target": "fuel_manager_server_save_data",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L51",
+      "weight": 1.0,
+      "source": "fuel_manager_server_rationale_51",
+      "target": "fuel_manager_server_generate_self_signed_cert",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L67",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler",
+      "target": "fuel_manager_server_handler_do_get",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L95",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler",
+      "target": "fuel_manager_server_handler_do_options",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L74",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler",
+      "target": "fuel_manager_server_handler_do_post",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L64",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler",
+      "target": "fuel_manager_server_handler_init",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L84",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler",
+      "target": "fuel_manager_server_handler_json_response",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "method",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L102",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler",
+      "target": "fuel_manager_server_handler_log_message",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L63",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler",
+      "target": "simplehttprequesthandler",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L70",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler_do_get",
+      "target": "fuel_manager_server_handler_json_response",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "fuel-manager/server.py",
+      "source_location": "L80",
+      "weight": 1.0,
+      "source": "fuel_manager_server_handler_do_post",
+      "target": "fuel_manager_server_handler_json_response",
+      "confidence_score": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "4208e968fce1ef546d8b67757d5f8ce10ceadf3f"
+}

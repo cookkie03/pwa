@@ -1,0 +1,37 @@
+{
+  "fuel-manager/app.js": {
+    "mtime": 1781571695.4990473,
+    "ast_hash": "9e399e626540c5f581359d0e184357d6",
+    "semantic_hash": ""
+  },
+  "fuel-manager/manifest.json": {
+    "mtime": 1781557692.1568232,
+    "ast_hash": "da7bc294e9414edaab68dbe549d81d09",
+    "semantic_hash": ""
+  },
+  "fuel-manager/server.py": {
+    "mtime": 1781594012.8979726,
+    "ast_hash": "511520eb4ee98e8c7784a42ceea8b6a1",
+    "semantic_hash": ""
+  },
+  "fuel-manager/sw.js": {
+    "mtime": 1781557703.5411048,
+    "ast_hash": "60c5985ad7538d37b9fdb94213f5ca4d",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1781557649.0157561,
+    "ast_hash": "d10317abb104cd32dfe032a28a8f6f9c",
+    "semantic_hash": ""
+  },
+  "fuel-manager/docker-compose.yml": {
+    "mtime": 1781594023.21021,
+    "ast_hash": "5e1add0cfcf2d39b483bd5f05166d537",
+    "semantic_hash": ""
+  },
+  "fuel-manager/index.html": {
+    "mtime": 1781571471.5859904,
+    "ast_hash": "a02d14732f34a8741192e6a549185a3b",
+    "semantic_hash": ""
+  }
+}
