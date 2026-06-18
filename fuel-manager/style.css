@@ -366,10 +366,68 @@ footer {
   text-overflow: ellipsis;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
   .form-grid { grid-template-columns: 1fr; }
-  .info-grid { grid-template-columns: 1fr; }
-  th, td { padding: 6px 8px; font-size: 0.75rem; }
+  .info-grid { grid-template-columns: 1fr 1fr; }
+
+  .table-wrapper { overflow-x: visible; }
+
+  table, thead, tbody, tr, td { display: block; width: 100%; }
+  thead { display: none; }
+
+  table tbody tr {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 0 0 10px;
+    padding: 10px 12px;
+    position: relative;
+  }
+
+  table td {
+    border-bottom: none;
+    padding: 4px 0;
+    white-space: normal;
+    text-align: left;
+  }
+
+  table td::before {
+    display: inline-block;
+    min-width: 90px;
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  #tabella-tragitti td:nth-of-type(1)::before { content: "Data"; }
+  #tabella-tragitti td:nth-of-type(2)::before { content: "KM"; }
+  #tabella-tragitti td:nth-of-type(3)::before { content: "l/100km"; }
+  #tabella-tragitti td:nth-of-type(4)::before { content: "€/l"; }
+  #tabella-tragitti td:nth-of-type(5)::before { content: "Persone"; }
+  #tabella-tragitti td:nth-of-type(6)::before { content: "Totale"; }
+  #tabella-tragitti td:nth-of-type(7)::before { content: "Tot/testa"; }
+  #tabella-tragitti td:nth-of-type(8)::before { content: "Coeff/km"; }
+  #tabella-tragitti td:nth-of-type(9)::before { content: "Incongr."; }
+
+  #tabella-benzina td:nth-of-type(1)::before { content: "Data"; }
+  #tabella-benzina td:nth-of-type(2)::before { content: "Spesa"; }
+  #tabella-benzina td:nth-of-type(3)::before { content: "€/l"; }
+  #tabella-benzina td:nth-of-type(4)::before { content: "Litri"; }
+  #tabella-benzina td:nth-of-type(5)::before { content: "Mese"; }
+
+  #tabella-restituzioni td:nth-of-type(1)::before,
+  #tabella-spese td:nth-of-type(1)::before { content: "Data"; }
+  #tabella-restituzioni td:nth-of-type(2)::before,
+  #tabella-spese td:nth-of-type(2)::before { content: "Totale"; }
+  #tabella-restituzioni td:nth-of-type(3)::before,
+  #tabella-spese td:nth-of-type(3)::before { content: "Dettaglio"; }
+
+  table td:last-child {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    text-align: right;
+  }
+  table td:last-child::before { content: none; }
 }
 
 /* Person checkboxes for tragitto form */
