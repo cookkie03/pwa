@@ -288,9 +288,18 @@ td:last-child {
 
 .info-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-flow: dense;
+  gap: 10px;
   margin-bottom: 20px;
+}
+
+@media (min-width: 768px) {
+  .info-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.info-card[style*="grid-column"] {
+  padding: 20px;
 }
 
 .info-card {
@@ -308,9 +317,14 @@ td:last-child {
 }
 
 .info-card .value {
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-family: var(--font-serif);
+  font-size: 1.4rem;
+  font-weight: 600;
   margin-top: 4px;
+}
+
+.info-card[style*="grid-column"] .value {
+  font-size: 2rem;
 }
 
 .info-card .sub {
