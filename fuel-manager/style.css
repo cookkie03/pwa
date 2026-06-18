@@ -152,7 +152,7 @@ form {
   background: var(--card);
   border-radius: var(--radius);
   padding: 16px;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
   margin-bottom: 16px;
 }
 
@@ -203,22 +203,22 @@ button {
   color: #fff;
   border: none;
   padding: 10px 20px;
-  border-radius: 6px;
+  border-radius: var(--radius);
   font-size: 0.9rem;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, opacity 0.2s;
 }
 
-button:hover { background: var(--primary-dark); }
+button:hover { opacity: 0.88; }
 button.danger { background: var(--danger); }
-button.danger:hover { background: #b71c1c; }
+button.danger:hover { opacity: 0.88; }
 
 .table-wrapper {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   background: var(--card);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
   margin-bottom: 16px;
 }
 
@@ -297,7 +297,7 @@ td:last-child {
   background: var(--card);
   border-radius: var(--radius);
   padding: 14px;
-  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
 }
 
 .info-card .label {
@@ -405,9 +405,9 @@ footer {
 }
 
 .person-checkbox:has(input:checked) {
-  background: #e8f0fe;
+  background: var(--bg);
   border-color: var(--primary);
-  color: var(--primary-dark);
+  color: var(--primary);
   font-weight: 500;
 }
 
