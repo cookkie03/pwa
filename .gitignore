@@ -1,5 +1,6 @@
 # Dati sensibili
 dati.json
+*.xlsx
 *.key
 *.pem
 *.secret

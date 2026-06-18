@@ -3,13 +3,12 @@
 
 import json
 import os
-import ssl
 import threading
 from http.server import HTTPServer, SimpleHTTPRequestHandler
-from datetime import datetime
 
 PORT = 8599
-DATA_DIR = os.environ.get("DATA_DIR", os.path.dirname(os.path.abspath(__file__)))
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.environ.get("DATA_DIR", APP_DIR)
 DATA_FILE = os.path.join(DATA_DIR, "dati.json")
 
 DEFAULT_DATA = {
@@ -46,22 +45,9 @@ def save_data(data):
             json.dump(data, f, ensure_ascii=False, indent=2)
 
 
-def generate_self_signed_cert():
-    """Obtain the TailScale-issued cert/key, unless already present."""
-    crt = os.path.join(DATA_DIR, "debian.tail234659.ts.net.crt")
-    key = os.path.join(DATA_DIR, "debian.tail234659.ts.net.key")
-    if os.path.exists(crt) and os.path.exists(key):
-        return
-    from subprocess import run
-    run(["tailscale", "cert", "debian.tail234659.ts.net",
-         "--cert-file", crt, "--key-file", key],
-        check=True, capture_output=True)
-    print(f"Generated TailScale cert: {crt}")
-
-
 class Handler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=DATA_DIR, **kwargs)
+        super().__init__(*args, directory=APP_DIR, **kwargs)
 
     def do_GET(self):
         if self.path == "/api/data" or self.path == "/api/data/":
@@ -103,121 +89,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    # Seed from xlsx if dati.json doesn't exist
-    if not os.path.exists(DATA_FILE):
-        print("dati.json not found — seeding from xlsx...")
-        try:
-            import openpyxl
-
-            wb = openpyxl.load_workbook(
-                "/home/hermes/.hermes/cache/documents/doc_59b758883ca8_Gestione Benzina.xlsx",
-                data_only=True,
-            )
-
-            def cv(v):
-                if v is None: return None
-                if isinstance(v, datetime): return v.strftime("%Y-%m-%d")
-                if isinstance(v, str): return v.strip()
-                return v
-
-            def sf(v):
-                if v is None: return 0
-                if isinstance(v, (int, float)): return float(v)
-                try: return float(str(v).replace(",", ".").strip())
-                except: return 0
-
-            def fc(hdrs, kws):
-                for i, h in enumerate(hdrs):
-                    if h is None: continue
-                    for kw in kws:
-                        if kw.lower() in str(h).lower(): return i
-                return -1
-
-            ws = wb["Tragitti"]
-            h = [cv(c.value) for c in list(ws.iter_rows(min_row=1, max_row=1))[0]]
-            di = fc(h, ["data"]); dk = fc(h, ["km", "tragitto"]); dc = fc(h, ["consumo"])
-            dco = fc(h, ["costo", "carburante"]); dp = fc(h, ["persone"]); da = fc(h, ["aggiuntivi"])
-            tragitti = []
-            for row in ws.iter_rows(min_row=2, max_row=ws.max_row, values_only=True):
-                if not row or row[di] is None: continue
-                data = cv(row[di]); km = sf(row[dk]); cons = sf(row[dc]); costo = sf(row[dco])
-                pers = sf(row[dp]) if row[dp] else 1.55; agg = sf(row[da])
-                tot = (km / 100) * cons * costo + agg
-                tragitti.append({
-                    "data": data, "km": round(km, 2), "consumo": round(cons, 2),
-                    "costoCarburante": round(costo, 3), "persone": round(pers, 2),
-                    "costiAgg": round(agg, 2), "totale": round(tot, 2),
-                    "totaleTesta": round(tot / pers if pers > 0 else tot, 2),
-                    "coeffKm": round(tot / km if km > 0 else 0, 6),
-                })
-
-            ws = wb["Benzina"]
-            h = [cv(c.value) for c in list(ws.iter_rows(min_row=1, max_row=1))[0]]
-            di = fc(h, ["data"]); ds = fc(h, ["spesa"]); dco = fc(h, ["costo"])
-            dl = fc(h, ["litri"]); dm = fc(h, ["mese"])
-            benzina = []
-            for row in ws.iter_rows(min_row=2, max_row=ws.max_row, values_only=True):
-                if not row or row[di] is None: continue
-                data = cv(row[di]); spesa = sf(row[ds]); costo = sf(row[dco])
-                litri = sf(row[dl]) if row[dl] else (spesa / costo if costo > 0 else 0)
-                mese = str(row[dm] or "")[:10] if row[dm] else ""
-                benzina.append({
-                    "data": data, "spesa": round(spesa, 2), "costoCarburante": round(costo, 3),
-                    "litri": round(litri, 2), "mese": mese,
-                })
-
-            ws = wb["Restituzioni"]
-            rn = [cv(c.value) for c in list(ws.iter_rows(min_row=2, max_row=2))[0]]
-            nomi_r = []; cir = {}
-            for i in range(2, len(rn)):
-                n = rn[i]
-                if n and n != "0": nomi_r.append(n); cir[n] = i
-            restituzioni = []
-            for row in ws.iter_rows(min_row=3, max_row=ws.max_row, values_only=True):
-                if not row or row[0] is None: continue
-                data = cv(row[0]); det = {}; tot = 0
-                for nome, idx in cir.items():
-                    v = sf(row[idx])
-                    if v != 0: det[nome] = round(v, 2); tot += v
-                if tot > 0: restituzioni.append({"data": data, "totale": round(tot, 2), "dettaglio": det})
-
-            ws = wb["Spese"]
-            sn = [cv(c.value) for c in list(ws.iter_rows(min_row=2, max_row=2))[0]]
-            nomi_s = []; cis = {}
-            for i in range(2, len(sn)):
-                n = sn[i]
-                if n and n != "0": nomi_s.append(n); cis[n] = i
-            spese = []
-            for row in ws.iter_rows(min_row=3, max_row=ws.max_row, values_only=True):
-                if not row or row[0] is None: continue
-                data = cv(row[0]); det = {}; tot = 0
-                for nome, idx in cis.items():
-                    v = sf(row[idx])
-                    if v != 0: det[nome] = round(v, 2); tot += v
-                if tot > 0: spese.append({"data": data, "totale": round(tot, 2), "dettaglio": det})
-
-            tutte = sorted(set(nomi_r + nomi_s))
-            data = {"persone": tutte, "tragitti": tragitti, "benzina": benzina,
-                    "restituzioni": restituzioni, "spese": spese}
-            save_data(data)
-            print(f"Seeded: {len(tragitti)} tragitti, {len(benzina)} benzina, "
-                  f"{len(restituzioni)} rest, {len(spese)} spese, {len(tutte)} persone")
-        except Exception as e:
-            print(f"Seed error: {e}")
-
-    # Generate self-signed cert
-    generate_self_signed_cert()
-
-    # Create HTTPS server
     server = HTTPServer(("0.0.0.0", PORT), Handler)
-    ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    # Use the full chain cert from tailscale
-    ctx.load_cert_chain(
-        os.path.join(DATA_DIR, "debian.tail234659.ts.net.crt"),
-        os.path.join(DATA_DIR, "debian.tail234659.ts.net.key")
-    )
-    server.socket = ctx.wrap_socket(server.socket, server_side=True)
-
-    print(f"Fuel Manager HTTPS running on https://0.0.0.0:{PORT}")
-    print(f"  → https://debian.tail234659.ts.net:{PORT}")
+    print(f"Fuel Manager HTTP running on http://0.0.0.0:{PORT}")
+    print(f"  → http://debian.tail234659.ts.net:{PORT}")
     server.serve_forever()

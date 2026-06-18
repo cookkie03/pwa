@@ -3,18 +3,11 @@ services:
     build: .
     container_name: fuel-manager
     restart: always
+    network_mode: bridge
     ports:
       - "8599:8599"
     volumes:
-      - fuel-data:/app/data
+      - ./data:/app/data
     environment:
       - TZ=Europe/Rome
       - DATA_DIR=/app/data
-
-volumes:
-  fuel-data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /home/hermes/workspace/pwa/fuel-manager/data
