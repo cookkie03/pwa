@@ -11,7 +11,6 @@ from datetime import datetime
 PORT = 8599
 DATA_DIR = os.environ.get("DATA_DIR", os.path.dirname(os.path.abspath(__file__)))
 DATA_FILE = os.path.join(DATA_DIR, "dati.json")
-CERT_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "server.pem")
 
 DEFAULT_DATA = {
     "persone": [
@@ -48,16 +47,16 @@ def save_data(data):
 
 
 def generate_self_signed_cert():
-    """Generate a self-signed cert for both DuckDNS and TailScale domains."""
-    if os.path.exists(CERT_FILE):
-        return
-    from subprocess import run, PIPE
+    """Obtain the TailScale-issued cert/key, unless already present."""
     crt = os.path.join(DATA_DIR, "debian.tail234659.ts.net.crt")
     key = os.path.join(DATA_DIR, "debian.tail234659.ts.net.key")
+    if os.path.exists(crt) and os.path.exists(key):
+        return
+    from subprocess import run
     run(["tailscale", "cert", "debian.tail234659.ts.net",
          "--cert-file", crt, "--key-file", key],
         check=True, capture_output=True)
-    print(f"Generated self-signed cert: {CERT_FILE}")
+    print(f"Generated TailScale cert: {crt}")
 
 
 class Handler(SimpleHTTPRequestHandler):

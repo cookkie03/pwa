@@ -147,7 +147,7 @@ document.getElementById('form-tragitto').addEventListener('submit', e => {
   f.reset();
   f.data.value = todayISO();
   renderTragittoPersone();
-  updateStatus('Tragitto aggiunto (' + personeCount + ' persone)';
+  updateStatus('Tragitto aggiunto (' + personeCount + ' persone)');
 });
 
 function renderTragitti() {
