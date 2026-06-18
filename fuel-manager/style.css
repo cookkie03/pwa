@@ -5,17 +5,32 @@
 }
 
 :root {
-  --primary: #1a73e8;
-  --primary-dark: #1557b0;
-  --danger: #d93025;
-  --success: #188038;
-  --bg: #f8f9fa;
-  --card: #fff;
-  --text: #202124;
-  --text-secondary: #5f6368;
-  --border: #dadce0;
-  --radius: 8px;
-  --shadow: 0 1px 3px rgba(0,0,0,0.12);
+  --primary: #c2562f;
+  --primary-dark: #a3431f;
+  --danger: #a8412f;
+  --success: #6b7a3f;
+  --bg: #f7f3ee;
+  --card: #fffdfb;
+  --text: #241f1a;
+  --text-secondary: #6b6259;
+  --border: #e3dcd2;
+  --radius: 6px;
+  --shadow: none;
+  --font-serif: ui-serif, Georgia, 'Times New Roman', serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #e07a4d;
+    --primary-dark: #f0936a;
+    --danger: #d97e6b;
+    --success: #9caf6b;
+    --bg: #1b1714;
+    --card: #241f1a;
+    --text: #f2ece4;
+    --text-secondary: #b3a99d;
+    --border: #3a322b;
+  }
 }
 
 body {
