@@ -9,8 +9,11 @@ COPY style.css .
 COPY app.js .
 COPY manifest.json .
 COPY sw.js .
+COPY icon.svg .
 COPY icon-192.png .
 COPY icon-512.png .
+COPY apple-touch-icon.png .
+COPY favicon-32.png .
 
 # Data directory (volume mount point)
 VOLUME /app/data

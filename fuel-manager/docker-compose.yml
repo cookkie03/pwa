@@ -1,9 +1,25 @@
 services:
+  # Syncs the host checkout of the monorepo before the app container is
+  # (re)created. The image build itself also pulls the latest commit
+  # straight from GitHub (see Dockerfile), so this keeps the local
+  # working copy on the host (used for data/, docs, deploy scripts...)
+  # in step with what was just built.
+  repo-sync:
+    image: alpine/git:latest
+    container_name: fuel-manager-repo-sync
+    working_dir: /repo
+    volumes:
+      - ..:/repo
+    entrypoint: ["sh", "/repo/scripts/sync-repo.sh"]
+
   fuel-manager:
     build: .
     container_name: fuel-manager
     restart: always
     network_mode: bridge
+    depends_on:
+      repo-sync:
+        condition: service_completed_successfully
     ports:
       # Solo localhost: l'app NON è raggiungibile dalla rete Tailscale né da altre interfacce
       - "127.0.0.1:8600:8599"
