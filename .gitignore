@@ -21,6 +21,8 @@ fuel-manager-ca.mobileconfig
 icon-192.png
 icon-512.png
 icon.svg
+apple-touch-icon.png
+favicon-32.png
 
 # Metadati filesystem Synology
 @eaDir/
