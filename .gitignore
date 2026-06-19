@@ -27,4 +27,6 @@ favicon-32.png
 # Metadati filesystem Synology
 @eaDir/
 *@SynoEAStream
-.claude
+
+# Config locale Claude Code
+.claude/
