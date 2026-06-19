@@ -4,7 +4,7 @@
 import json
 import os
 import threading
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 PORT = 8599
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -89,7 +89,7 @@ class Handler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    server = HTTPServer(("0.0.0.0", PORT), Handler)
+    server = ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
     print(f"Fuel Manager HTTP running on http://0.0.0.0:{PORT}")
     print(f"  → http://debian.tail234659.ts.net:{PORT}")
     server.serve_forever()
