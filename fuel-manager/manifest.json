@@ -1,11 +1,11 @@
 {
-  "name": "Gestione Benzina",
-  "short_name": "Benzina",
-  "description": "Tragitti, consumi, spese e restituzioni",
+  "name": "Serbatoio — Gestione Benzina",
+  "short_name": "Serbatoio",
+  "description": "Tragitti, rifornimenti e saldi con serbatoio FIFO automatico",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f7f3ee",
-  "theme_color": "#c2562f",
+  "background_color": "#f6f3ee",
+  "theme_color": "#b8541f",
   "orientation": "portrait",
   "icons": [
     {

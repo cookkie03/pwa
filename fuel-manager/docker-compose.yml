@@ -5,7 +5,8 @@ services:
     restart: always
     network_mode: bridge
     ports:
-      - "8599:8599"
+      # Solo localhost: l'app NON è raggiungibile dalla rete Tailscale né da altre interfacce
+      - "127.0.0.1:8599:8599"
     volumes:
       - ./data:/app/data
     environment:

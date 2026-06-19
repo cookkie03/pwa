@@ -1,4 +1,4 @@
-const CACHE_NAME = 'benzina-v1';
+const CACHE_NAME = 'serbatoio-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -24,6 +24,9 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  const url = new URL(e.request.url);
+  // L'API dei dati va sempre presa dalla rete, mai dalla cache.
+  if (url.pathname.startsWith('/api/')) return;
   e.respondWith(
     caches.match(e.request).then(cached => cached || fetch(e.request))
   );

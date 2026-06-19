@@ -2,218 +2,187 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#c2562f">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#b8541f">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="Gestione Benzina - Tragitti, Consumi, Spese e Restituzioni">
+  <meta name="description" content="Gestione benzina: tragitti, rifornimenti e saldi con serbatoio FIFO automatico">
   <link rel="manifest" href="manifest.json">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <title>Gestione Benzina</title>
+  <title>Serbatoio</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>⛽ Gestione Benzina</h1>
-  </header>
-
   <nav id="tabs">
-    <button class="tab active" data-tab="tragitti">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 13l2-7h10l2 7M5 13h14v6H5z"/><circle cx="8" cy="19" r="1.2"/><circle cx="16" cy="19" r="1.2"/></svg>
+    <div class="brand">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15"/><path d="M3 21h14"/><path d="M15 9h2a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0 3 0V9l-3-3"/><path d="M8 8h4"/></svg>
+    </div>
+    <button class="tab active" data-tab="dashboard">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      <span>Quadro</span>
+    </button>
+    <button class="tab" data-tab="tragitti">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14l-1.5-5.5A2 2 0 0 0 15.6 10H8.4a2 2 0 0 0-1.9 1.5L5 17Z"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg>
       <span>Tragitti</span>
     </button>
-    <button class="tab" data-tab="benzina">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 21V8l4-4h2l4 4v2h2v7a2 2 0 01-2 2h-1"/><rect x="6" y="8" width="8" height="13"/><path d="M9 12h2"/></svg>
+    <button class="tab" data-tab="rifornimenti">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v15"/><path d="M3 21h14"/><path d="M15 9h2a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0 3 0V9l-3-3"/></svg>
       <span>Benzina</span>
     </button>
-    <button class="tab" data-tab="restituzioni">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 12a8 8 0 0114-5M20 12a8 8 0 01-14 5M4 7v4h4M20 17v-4h-4"/></svg>
-      <span>Restituz.</span>
-    </button>
-    <button class="tab" data-tab="spese">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="13" rx="1.5"/><path d="M3 10h18M7 15h3"/></svg>
-      <span>Spese</span>
-    </button>
-    <button class="tab" data-tab="info">
-      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 8v.01M12 11v5"/></svg>
-      <span>Info</span>
+    <button class="tab" data-tab="persone">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 6.5a3 3 0 0 1 0 5.5M18 20a5.5 5.5 0 0 0-3-4.9"/></svg>
+      <span>Saldi</span>
     </button>
   </nav>
 
   <main>
-    <!-- TRAGITTI -->
-    <section id="tragitti" class="tab-content active">
-      <h2>Tragitti</h2>
-      <form id="form-tragitto">
-        <div class="form-grid">
-          <label>Data <input type="date" name="data" required></label>
-          <label>KM <input type="number" name="km" step="0.1" required></label>
-          <label>Consumo (l/100km) <input type="number" name="consumo" step="0.1" required></label>
-          <label>Costo carburante (€/l) <input type="number" name="costoCarburante" step="0.001" required></label>
-          <label>Costi aggiuntivi (€) <input type="number" name="costiAgg" step="0.01" value="0"></label>
-          <div class="colspan-2">
-            <label class="persone-label">Persone (oltre a te)</label>
-            <div id="tragitto-persone" class="person-checkboxes"></div>
-          </div>
-        </div>
-        <div class="form-actions">
-          <button type="submit">Aggiungi tragitto</button>
-        </div>
-      </form>
+    <!-- ============ DASHBOARD ============ -->
+    <section id="dashboard" class="tab-content active">
+      <header class="page-head">
+        <p class="eyebrow">Serbatoio</p>
+        <h1 id="tank-headline">—</h1>
+        <p class="page-sub" id="tank-sub"></p>
+      </header>
 
-      <div class="table-wrapper">
-        <table id="tabella-tragitti">
-          <thead>
-            <tr>
-              <th>Data</th><th>KM</th><th>l/100km</th><th>€/l</th><th>Persone</th>
-              <th>Totale</th><th>Tot/testa</th><th>Coeff/km</th><th>Incongr.</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div class="bento" id="dash-metrics"></div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Chi ti deve</h2>
+          <span class="pill" id="owed-total">—</span>
+        </div>
+        <div id="dash-saldi" class="ledger"></div>
       </div>
     </section>
 
-    <!-- BENZINA -->
-    <section id="benzina" class="tab-content">
-      <h2>Benzina</h2>
-      <form id="form-benzina">
-        <div class="form-grid">
-          <label>Data <input type="date" name="data" required></label>
-          <label>Spesa (€) <input type="number" name="spesa" step="0.01" required></label>
-          <label>Costo carburante (€/l) <input type="number" name="costoCarburante" step="0.001" required></label>
-          <label>Litri <input type="number" name="litri" step="0.01" required></label>
-          <label>Mese riferimento <input type="text" name="mese" placeholder="gen-25" required></label>
+    <!-- ============ TRAGITTI ============ -->
+    <section id="tragitti" class="tab-content">
+      <header class="page-head">
+        <h1>Tragitti</h1>
+        <p class="page-sub">Inserisci solo km, consumo e chi era in auto. Il costo lo calcola il serbatoio.</p>
+      </header>
+
+      <form id="form-tragitto" class="card-form" autocomplete="off">
+        <div class="field-row">
+          <div class="field">
+            <label for="t-data">Data</label>
+            <input id="t-data" type="date" name="data" required>
+          </div>
+          <div class="field">
+            <label for="t-km">Tragitto (km)</label>
+            <input id="t-km" type="number" name="km" inputmode="decimal" step="0.1" placeholder="32" required>
+          </div>
+          <div class="field">
+            <label for="t-consumo">Consumo (l/100km)</label>
+            <input id="t-consumo" type="number" name="consumo" inputmode="decimal" step="0.1" placeholder="6.7" required>
+          </div>
         </div>
-        <div class="form-actions">
-          <button type="submit">Aggiungi rifornimento</button>
+
+        <div class="field">
+          <label>In auto</label>
+          <div id="t-persone" class="chips"></div>
+        </div>
+
+        <details class="extra">
+          <summary>Costi extra (pedaggi)</summary>
+          <div class="field">
+            <input type="number" name="costiAgg" inputmode="decimal" step="0.01" placeholder="0,00 €" value="">
+          </div>
+        </details>
+
+        <div class="form-foot">
+          <span class="preview" id="t-preview"></span>
+          <button type="submit" class="btn-primary">Aggiungi</button>
         </div>
       </form>
 
-      <div class="table-wrapper">
-        <table id="tabella-benzina">
-          <thead>
-            <tr>
-              <th>Data</th><th>Spesa</th><th>€/l</th><th>Litri</th><th>Mese</th><th></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+      <div id="lista-tragitti" class="feed"></div>
     </section>
 
-    <!-- RESTITUZIONI -->
-    <section id="restituzioni" class="tab-content">
-      <h2>Restituzioni</h2>
-      <div class="subsection">
-        <h3>Persone</h3>
-        <form id="form-persona">
-          <div class="form-grid">
-            <label>Nome persona <input type="text" name="nome" required></label>
-          </div>
-          <div class="form-actions">
-            <button type="submit">Aggiungi persona</button>
-          </div>
-        </form>
-        <div id="lista-persone" class="person-tags"></div>
-      </div>
+    <!-- ============ RIFORNIMENTI ============ -->
+    <section id="rifornimenti" class="tab-content">
+      <header class="page-head">
+        <h1>Rifornimenti</h1>
+        <p class="page-sub">Quanto hai speso al distributore e il prezzo al litro. I litri entrano nel serbatoio.</p>
+      </header>
 
-      <div class="subsection">
-        <h3>Voce restituzione</h3>
-        <form id="form-restituzione">
-          <div class="form-grid">
-            <label>Data <input type="date" name="data" required></label>
-            <label>Totale entrate (€) <input type="number" name="totale" step="0.01" value="0"></label>
-            <label>Dividi per tutti <input type="checkbox" name="dividiTutti" checked></label>
-            <div class="colspan-2" id="restituzione-persone">
-              <!-- generato dinamicamente -->
+      <form id="form-rifornimento" class="card-form" autocomplete="off">
+        <div class="field-row">
+          <div class="field">
+            <label for="r-data">Data</label>
+            <input id="r-data" type="date" name="data" required>
+          </div>
+          <div class="field">
+            <label for="r-importo">Importo (€)</label>
+            <input id="r-importo" type="number" name="importo" inputmode="decimal" step="0.01" placeholder="50,00" required>
+          </div>
+          <div class="field">
+            <label for="r-costo">Costo (€/l)</label>
+            <input id="r-costo" type="number" name="costo" inputmode="decimal" step="0.001" placeholder="1.789" required>
+          </div>
+        </div>
+        <div class="form-foot">
+          <span class="preview" id="r-preview"></span>
+          <button type="submit" class="btn-primary">Aggiungi</button>
+        </div>
+      </form>
+
+      <div id="lista-rifornimenti" class="feed"></div>
+    </section>
+
+    <!-- ============ PERSONE / SALDI ============ -->
+    <section id="persone" class="tab-content">
+      <header class="page-head">
+        <h1>Saldi</h1>
+        <p class="page-sub">Quote dei tragitti meno quanto ti hanno già restituito.</p>
+      </header>
+
+      <div id="lista-saldi" class="ledger ledger-full"></div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Registra restituzione</h2></div>
+        <form id="form-restituzione" class="card-form" autocomplete="off">
+          <div class="field-row">
+            <div class="field">
+              <label for="q-data">Data</label>
+              <input id="q-data" type="date" name="data" required>
+            </div>
+            <div class="field">
+              <label for="q-persona">Persona</label>
+              <select id="q-persona" name="persona" required></select>
+            </div>
+            <div class="field">
+              <label for="q-importo">Importo (€)</label>
+              <input id="q-importo" type="number" name="importo" inputmode="decimal" step="0.01" placeholder="0,00" required>
             </div>
           </div>
-          <div class="form-actions">
-            <button type="submit">Aggiungi restituzione</button>
+          <div class="form-foot">
+            <span></span>
+            <button type="submit" class="btn-primary">Registra</button>
           </div>
         </form>
       </div>
 
-      <div class="table-wrapper">
-        <table id="tabella-restituzioni">
-          <thead>
-            <tr>
-              <th>Data</th><th>Totale</th><th>Dettaglio per persona</th><th></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div class="panel">
+        <div class="panel-head"><h2>Persone</h2></div>
+        <form id="form-persona" class="inline-add" autocomplete="off">
+          <input type="text" name="nome" placeholder="Aggiungi persona" required>
+          <button type="submit" class="btn-ghost">Aggiungi</button>
+        </form>
+        <div id="lista-persone" class="tags"></div>
       </div>
-    </section>
 
-    <!-- SPESE -->
-    <section id="spese" class="tab-content">
-      <h2>Spese a persona</h2>
-      <form id="form-spesa">
-        <div class="form-grid">
-          <label>Data <input type="date" name="data" required></label>
-          <label>Totale spesa (€) <input type="number" name="totale" step="0.01" required></label>
-          <div class="colspan-2" id="spese-persone">
-            <!-- generato dinamicamente -->
-          </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Dati</h2></div>
+        <div class="form-foot wrap">
+          <button id="btn-export-json" type="button" class="btn-ghost">Esporta JSON</button>
+          <button id="btn-reset" type="button" class="btn-danger">Reset</button>
         </div>
-        <div class="form-actions">
-          <button type="submit">Aggiungi spesa</button>
-        </div>
-      </form>
-
-      <div class="table-wrapper">
-        <table id="tabella-spese">
-          <thead>
-            <tr>
-              <th>Data</th><th>Totale</th><th>Dettaglio per persona</th><th></th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- INFO -->
-    <section id="info" class="tab-content">
-      <h2>Riepilogo</h2>
-      <div id="info-riepilogo" class="info-grid"></div>
-
-      <h3>Importa dati da Google Sheet</h3>
-      <p class="hint">Incolla i dati CSV esportati dai fogli Google per popolare l'app.</p>
-      <form id="form-import">
-        <div class="form-grid">
-          <label>Foglio
-            <select name="foglio">
-              <option value="tragitti">Tragitti</option>
-              <option value="benzina">Benzina</option>
-              <option value="restituzioni">Restituzioni</option>
-              <option value="spese">Spese</option>
-            </select>
-          </label>
-          <label class="colspan-2">Dati CSV (incolla qui, prima riga = intestazioni)
-            <textarea name="csvData" rows="4" placeholder="Data,KM,Consumo,..."></textarea>
-          </label>
-        </div>
-        <div class="form-actions">
-          <button type="submit">Importa</button>
-        </div>
-      </form>
-
-      <h3>Esporta dati</h3>
-      <div class="form-actions">
-        <button id="btn-export-csv" type="button">Esporta tutto (CSV)</button>
-        <button id="btn-export-json" type="button">Esporta tutto (JSON)</button>
-        <button id="btn-reset" type="button" class="danger">Reset dati</button>
       </div>
     </section>
   </main>
 
-  <footer>
-    <span id="status-bar">Pronto</span>
-  </footer>
+  <div id="toast" class="toast" aria-live="polite"></div>
 
   <script src="app.js"></script>
 </body>
