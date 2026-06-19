@@ -27,3 +27,4 @@ favicon-32.png
 # Metadati filesystem Synology
 @eaDir/
 *@SynoEAStream
+.claude
