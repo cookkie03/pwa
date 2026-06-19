@@ -234,19 +234,44 @@ function toast(msg) {
 function renderDashboard(c) {
   const tank = c.tank;
   const head = document.getElementById('tank-headline');
+  const head2 = document.getElementById('tank-headline-2');
   const sub = document.getElementById('tank-sub');
   if (tank.owed > 0.05) {
     head.innerHTML = `<span class="neg">${num(tank.owed, 1)}</span> <small>l in prestito</small>`;
+    head2.innerHTML = `<span class="neg">${euro(tank.owed * prezzoCorrente())}</span> <small>da pagare</small>`;
     sub.textContent = 'Carburante guidato e non ancora coperto da un rifornimento. Verrà prezzato al prossimo pieno.';
   } else if (tank.avail > 0.05) {
     head.innerHTML = `<span class="pos">${num(tank.avail, 1)}</span> <small>l disponibili</small>`;
-    sub.textContent = `Valore residuo ${euro(tank.availValue)} — carburante pagato non ancora consumato.`;
+    head2.innerHTML = `<span class="pos">${euro(tank.availValue)}</span> <small>valore residuo</small>`;
+    sub.textContent = 'Carburante pagato non ancora consumato.';
   } else {
     head.innerHTML = `<span>0,0</span> <small>l</small>`;
+    head2.innerHTML = '';
     sub.textContent = 'Serbatoio in pari: tutto il carburante comprato è stato consumato.';
   }
 
+  // controvalore: disponibile vs in prestito (stimato al prezzo corrente)
+  const prezzoStima = prezzoCorrente();
+  const owedValue = tank.owed * prezzoStima;
+  const netValue = tank.availValue - owedValue;
+  const tankStats = [
+    { l: 'Disponibile', v: euro(tank.availValue), cls: 'pos' },
+    { l: 'In prestito', v: tank.owed > 0.05 ? euro(owedValue) : euro(0), cls: tank.owed > 0.05 ? 'neg' : '' },
+    { l: 'Controvalore netto', v: euro(netValue), cls: netValue < 0 ? 'neg' : 'pos' },
+  ];
+  document.getElementById('tank-stats').innerHTML = tankStats.map((s, i) => `
+    <div class="tank-stat" style="--i:${i}">
+      <span class="tank-stat-label">${s.l}</span>
+      <span class="tank-stat-value ${s.cls}">${s.v}</span>
+    </div>`).join('');
+
   const T = c.totals;
+  const lastRefuel = [...c.refuels].sort((a, b) => (a.data < b.data ? 1 : -1))[0];
+  const lastTrip = [...c.trips].sort((a, b) => (a.data < b.data ? 1 : -1))[0];
+  const partecipantiUnici = new Set(c.trips.flatMap(t => t.partecipanti));
+  const avgKmTragitto = c.trips.length ? T.totKm / c.trips.length : 0;
+  const giorniDaUltimo = lastRefuel ? Math.round((new Date(todayISO()) - new Date(lastRefuel.data)) / 86400000) : null;
+
   const metrics = [
     { l: 'Km totali', v: num(T.totKm, 0), u: 'km' },
     { l: 'Speso in benzina', v: euro(T.spesaBenzina), u: '' },
@@ -254,6 +279,10 @@ function renderDashboard(c) {
     { l: 'Prezzo medio', v: num(T.prezzoPesato, 3), u: '€/l' },
     { l: 'Costo per km', v: euro(T.costoPerKm), u: '/km' },
     { l: 'Tragitti', v: num(c.trips.length, 0), u: '' },
+    { l: 'Km medi a tragitto', v: num(avgKmTragitto, 0), u: 'km' },
+    { l: 'Persone coinvolte', v: num(partecipantiUnici.size, 0), u: '' },
+    { l: 'Ultimo pieno', v: lastRefuel ? num(lastRefuel.costo, 3) : '—', u: lastRefuel ? '€/l' : '' },
+    { l: 'Giorni dall\'ultimo pieno', v: giorniDaUltimo === null ? '—' : num(giorniDaUltimo, 0), u: giorniDaUltimo === null ? '' : 'gg' },
   ];
   document.getElementById('dash-metrics').innerHTML = metrics.map((m, i) => `
     <div class="metric" style="--i:${i}">
@@ -268,6 +297,61 @@ function renderDashboard(c) {
   const totOwed = debs.reduce((s, [, v]) => s + v, 0);
   document.getElementById('owed-total').textContent = euro(totOwed);
   renderLedger(document.getElementById('dash-saldi'), debs.slice(0, 6), totOwed);
+
+  renderTrend(c);
+  renderRecent(lastTrip, lastRefuel);
+}
+
+// andamento mensile: spesa totale (tragitti) per mese, ultimi 6 mesi con dati
+function renderTrend(c) {
+  const byMonth = {};
+  c.trips.forEach(t => {
+    if (!t.data) return;
+    const m = t.data.slice(0, 7); // YYYY-MM
+    byMonth[m] = (byMonth[m] || 0) + t.totale;
+  });
+  const months = Object.keys(byMonth).sort().slice(-6);
+  const el = document.getElementById('dash-trend');
+  const totalEl = document.getElementById('trend-total');
+  if (!months.length) {
+    el.innerHTML = `<p class="empty">Nessun dato ancora per un andamento mensile.</p>`;
+    totalEl.textContent = '—';
+    return;
+  }
+  const totMonths = months.reduce((s, m) => s + byMonth[m], 0);
+  totalEl.textContent = euro(totMonths);
+  const top = Math.max(...months.map(m => byMonth[m]), 1);
+  el.innerHTML = months.map((m, i) => {
+    const [y, mo] = m.split('-');
+    const label = new Date(+y, +mo - 1, 1).toLocaleDateString('it-IT', { month: 'short', year: '2-digit' });
+    return `
+    <div class="trend-row" style="--i:${i}">
+      <span class="trend-label">${label}</span>
+      <span class="trend-bar"><span style="width:${Math.max(4, (byMonth[m] / top) * 100)}%"></span></span>
+      <span class="trend-amt">${euro(byMonth[m])}</span>
+    </div>`;
+  }).join('');
+}
+
+// ultimo tragitto / ultimo rifornimento, affiancati
+function renderRecent(lastTrip, lastRefuel) {
+  const el = document.getElementById('dash-recent');
+  const cards = [];
+  cards.push(lastTrip ? `
+    <div class="recent-card">
+      <span class="recent-label">Ultimo tragitto</span>
+      <span class="recent-date">${fmtDate(lastTrip.data)}</span>
+      <span class="recent-info">${num(lastTrip.km, 0)} km · ${lastTrip.partecipanti.length} in auto</span>
+      <span class="recent-amt">${euro(lastTrip.totale)}</span>
+    </div>` : `<div class="recent-card"><span class="recent-label">Ultimo tragitto</span><p class="empty sm">Nessuno.</p></div>`);
+  cards.push(lastRefuel ? `
+    <div class="recent-card">
+      <span class="recent-label">Ultimo rifornimento</span>
+      <span class="recent-date">${fmtDate(lastRefuel.data)}</span>
+      <span class="recent-info">${num(lastRefuel.costo, 3)} €/l</span>
+      <span class="recent-amt">${euro(lastRefuel.importo)}</span>
+    </div>` : `<div class="recent-card"><span class="recent-label">Ultimo rifornimento</span><p class="empty sm">Nessuno.</p></div>`);
+  el.innerHTML = cards.join('');
 }
 
 function renderLedger(el, rows, max) {
@@ -429,7 +513,199 @@ function renderAll() {
   renderTragitti(c);
   renderRifornimenti(c);
   renderPersone(c);
+  renderGrafici(c);
 }
+
+// ============================================================
+// GRAFICI — motore SVG leggero, interattivo, senza dipendenze
+// ============================================================
+let lastCompute = null;
+
+function filterByPeriod(items, periodDays, dateOf) {
+  if (periodDays === 'all') return items;
+  const cutoff = new Date(todayISO());
+  cutoff.setDate(cutoff.getDate() - +periodDays);
+  return items.filter(x => {
+    const d = dateOf(x);
+    return d && new Date(d) >= cutoff;
+  });
+}
+
+function buildDataset(c, metric, period) {
+  if (metric === 'prezzo') {
+    const rows = filterByPeriod([...c.refuels].filter(r => r.data), period, r => r.data)
+      .sort((a, b) => (a.data < b.data ? -1 : 1));
+    return {
+      title: 'Prezzo carburante', unit: '€/l', currency: false,
+      labels: rows.map(r => fmtDate(r.data)), values: rows.map(r => r.costo),
+      defaultType: 'line', allowTrend: true,
+      summary: rows.length ? `media ${num(rows.reduce((s, r) => s + r.costo, 0) / rows.length, 3)} €/l` : '—',
+    };
+  }
+  if (metric === 'mensile') {
+    const rows = filterByPeriod([...c.trips].filter(t => t.data), period, t => t.data);
+    const byMonth = {};
+    rows.forEach(t => { const m = t.data.slice(0, 7); byMonth[m] = (byMonth[m] || 0) + t.totale; });
+    const months = Object.keys(byMonth).sort();
+    const labels = months.map(m => { const [y, mo] = m.split('-'); return new Date(+y, +mo - 1, 1).toLocaleDateString('it-IT', { month: 'short', year: '2-digit' }); });
+    const values = months.map(m => byMonth[m]);
+    return {
+      title: 'Spesa mensile', unit: '€', currency: true,
+      labels, values, defaultType: 'line', allowTrend: true,
+      summary: values.length ? `totale ${euro(values.reduce((s, v) => s + v, 0))}` : '—',
+    };
+  }
+  if (metric === 'cumulativa') {
+    const rows = filterByPeriod([...c.refuels].filter(r => r.data), period, r => r.data)
+      .sort((a, b) => (a.data < b.data ? -1 : 1));
+    let run = 0;
+    const values = rows.map(r => (run += r.importo));
+    return {
+      title: 'Spesa cumulativa', unit: '€', currency: true,
+      labels: rows.map(r => fmtDate(r.data)), values, defaultType: 'area', allowTrend: false,
+      summary: values.length ? `totale ${euro(values[values.length - 1])}` : '—',
+    };
+  }
+  if (metric === 'rifornimenti') {
+    const rows = filterByPeriod([...c.refuels].filter(r => r.data), period, r => r.data)
+      .sort((a, b) => (a.data < b.data ? -1 : 1));
+    return {
+      title: 'Spesa per rifornimento', unit: '€', currency: true,
+      labels: rows.map(r => fmtDate(r.data)), values: rows.map(r => r.importo),
+      defaultType: 'bar', allowTrend: false,
+      summary: rows.length ? `${rows.length} rifornimenti` : '—',
+    };
+  }
+  // consumo
+  const rows = filterByPeriod([...c.trips].filter(t => t.data), period, t => t.data)
+    .sort((a, b) => (a.data < b.data ? -1 : 1));
+  return {
+    title: 'Consumo per tragitto', unit: 'l/100km', currency: false,
+    labels: rows.map(t => fmtDate(t.data)), values: rows.map(t => t.consumo),
+    defaultType: 'bar', allowTrend: true,
+    summary: rows.length ? `media ${num(rows.reduce((s, t) => s + t.consumo, 0) / rows.length, 1)} l/100km` : '—',
+  };
+}
+
+function movingAverage(values, window = 3) {
+  return values.map((_, i) => {
+    const lo = Math.max(0, i - window + 1);
+    const slice = values.slice(lo, i + 1);
+    return slice.reduce((s, v) => s + v, 0) / slice.length;
+  });
+}
+
+const G = { W: 600, H: 280, pad: 14 };
+
+function chartCoords(values) {
+  const n = values.length;
+  const max = Math.max(...values, 0) * 1.15 || 1;
+  const usableH = G.H - G.pad * 2;
+  const x = i => n <= 1 ? G.W / 2 : G.pad + (i / (n - 1)) * (G.W - G.pad * 2);
+  const y = v => G.H - G.pad - (v / max) * usableH;
+  return { x, y, max };
+}
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  return el;
+}
+
+function renderChartSVG(ds, type, showTrend) {
+  const svg = document.getElementById('g-svg');
+  svg.innerHTML = '';
+  const { labels, values } = ds;
+  if (!values.length) {
+    document.getElementById('g-axis-x').innerHTML = '';
+    document.getElementById('g-tooltip').hidden = true;
+    return;
+  }
+  const { x, y } = chartCoords(values);
+
+  // griglia orizzontale leggera
+  for (let g = 0; g <= 3; g++) {
+    const gy = G.pad + (g / 3) * (G.H - G.pad * 2);
+    svg.appendChild(svgEl('line', { x1: G.pad, x2: G.W - G.pad, y1: gy, y2: gy, class: 'chart-grid' }));
+  }
+
+  if (type === 'bar') {
+    const n = values.length;
+    const slot = (G.W - G.pad * 2) / n;
+    const bw = Math.max(2, slot * 0.6);
+    values.forEach((v, i) => {
+      const bx = x(i) - bw / 2;
+      const by = y(v);
+      svg.appendChild(svgEl('rect', {
+        x: bx, y: by, width: bw, height: (G.H - G.pad) - by,
+        class: 'chart-bar', 'data-i': i,
+      }));
+    });
+  } else {
+    const pathD = values.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(v)}`).join(' ');
+    if (type === 'area') {
+      const areaD = `${pathD} L ${x(values.length - 1)} ${G.H - G.pad} L ${x(0)} ${G.H - G.pad} Z`;
+      svg.appendChild(svgEl('path', { d: areaD, class: 'chart-area' }));
+    }
+    svg.appendChild(svgEl('path', { d: pathD, class: 'chart-line', fill: 'none' }));
+    values.forEach((v, i) => {
+      svg.appendChild(svgEl('circle', { cx: x(i), cy: y(v), r: 3.2, class: 'chart-dot', 'data-i': i }));
+    });
+    if (showTrend && ds.allowTrend && values.length > 2) {
+      const trend = movingAverage(values, Math.min(3, values.length));
+      const trendD = trend.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(v)}`).join(' ');
+      svg.appendChild(svgEl('path', { d: trendD, class: 'chart-trend', fill: 'none' }));
+    }
+  }
+
+  // asse X: prime/ultima/medie etichette per non sovraffollare
+  const axisEl = document.getElementById('g-axis-x');
+  const maxLabels = 6;
+  const step = Math.max(1, Math.ceil(labels.length / maxLabels));
+  axisEl.innerHTML = labels.map((l, i) => (i % step === 0 || i === labels.length - 1) ? `<span style="left:${(x(i) / G.W) * 100}%">${l}</span>` : '').join('');
+
+  // tooltip interattivo
+  const tooltip = document.getElementById('g-tooltip');
+  const { x: xf } = chartCoords(values);
+  svg.onmousemove = svg.ontouchmove = e => {
+    const rect = svg.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const relX = ((clientX - rect.left) / rect.width) * G.W;
+    let nearest = 0, best = Infinity;
+    values.forEach((_, i) => { const d = Math.abs(xf(i) - relX); if (d < best) { best = d; nearest = i; } });
+    const val = ds.currency ? euro(values[nearest]) : `${num(values[nearest], ds.unit === 'l/100km' ? 1 : 3)} ${ds.unit}`;
+    tooltip.hidden = false;
+    tooltip.style.left = `${(xf(nearest) / G.W) * 100}%`;
+    tooltip.innerHTML = `<strong>${val}</strong><span>${labels[nearest] || ''}</span>`;
+  };
+  svg.onmouseleave = () => { tooltip.hidden = true; };
+}
+
+function renderGrafici(c) {
+  lastCompute = c;
+  const metric = document.getElementById('g-metric').value;
+  const period = document.getElementById('g-period').value;
+  const ds = buildDataset(c, metric, period);
+  const typeSel = document.getElementById('g-type');
+  if (typeSel.dataset.metric !== metric) {
+    typeSel.value = ds.defaultType;
+    typeSel.dataset.metric = metric;
+  }
+  const trendChk = document.getElementById('g-trend');
+  trendChk.disabled = !ds.allowTrend;
+  document.getElementById('g-title').textContent = ds.title;
+  document.getElementById('g-summary').textContent = ds.summary;
+  if (!ds.values.length) {
+    document.getElementById('g-svg').innerHTML = '';
+    document.getElementById('g-axis-x').innerHTML = '';
+    document.getElementById('g-tooltip').hidden = true;
+    return;
+  }
+  renderChartSVG(ds, typeSel.value, trendChk.checked && ds.allowTrend);
+}
+
+['g-metric', 'g-period', 'g-type', 'g-trend'].forEach(id =>
+  document.getElementById(id).addEventListener('change', () => { if (lastCompute) renderGrafici(lastCompute); }));
 
 // ============================================================
 // FORMS

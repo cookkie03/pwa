@@ -21,6 +21,10 @@
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
       <span>Quadro</span>
     </button>
+    <button class="tab" data-tab="grafici">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+      <span>Grafici</span>
+    </button>
     <button class="tab" data-tab="tragitti">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14l-1.5-5.5A2 2 0 0 0 15.6 10H8.4a2 2 0 0 0-1.9 1.5L5 17Z"/><circle cx="7.5" cy="17.5" r="1.8"/><circle cx="16.5" cy="17.5" r="1.8"/></svg>
       <span>Tragitti</span>
@@ -40,9 +44,14 @@
     <section id="dashboard" class="tab-content active">
       <header class="page-head">
         <p class="eyebrow">Serbatoio</p>
-        <h1 id="tank-headline">—</h1>
+        <div class="tank-headline-row">
+          <h1 class="tank-stat-big" id="tank-headline">—</h1>
+          <h1 class="tank-stat-big tank-stat-big-2" id="tank-headline-2"></h1>
+        </div>
         <p class="page-sub" id="tank-sub"></p>
       </header>
+
+      <div class="tank-row" id="tank-stats"></div>
 
       <div class="bento" id="dash-metrics"></div>
 
@@ -52,6 +61,73 @@
           <span class="pill" id="owed-total">—</span>
         </div>
         <div id="dash-saldi" class="ledger"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Andamento mensile</h2>
+          <span class="pill" id="trend-total">—</span>
+        </div>
+        <div id="dash-trend" class="trend"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Ultimo movimento</h2></div>
+        <div id="dash-recent" class="recent-grid"></div>
+      </div>
+    </section>
+
+    <!-- ============ GRAFICI ============ -->
+    <section id="grafici" class="tab-content">
+      <header class="page-head">
+        <h1>Grafici</h1>
+        <p class="page-sub">Esplora l'andamento di spese, prezzi e consumi. Cambia metrica, periodo e tipo al volo.</p>
+      </header>
+
+      <div class="chart-controls">
+        <div class="field">
+          <label for="g-metric">Metrica</label>
+          <select id="g-metric">
+            <option value="prezzo">Prezzo carburante</option>
+            <option value="mensile">Spesa mensile</option>
+            <option value="cumulativa">Spesa cumulativa</option>
+            <option value="rifornimenti">Spesa per rifornimento</option>
+            <option value="consumo">Consumo per tragitto</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="g-period">Periodo</label>
+          <select id="g-period">
+            <option value="all">Tutto</option>
+            <option value="365">Ultimo anno</option>
+            <option value="180">Ultimi 6 mesi</option>
+            <option value="90">Ultimi 3 mesi</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="g-type">Tipo</label>
+          <select id="g-type">
+            <option value="line">Linea</option>
+            <option value="area">Area</option>
+            <option value="bar">Barre</option>
+          </select>
+        </div>
+        <label class="chip chip-toggle">
+          <input type="checkbox" id="g-trend">
+          <span>Media mobile</span>
+        </label>
+      </div>
+
+      <div class="chart-card">
+        <div class="chart-head">
+          <h2 id="g-title">—</h2>
+          <span class="pill" id="g-summary">—</span>
+        </div>
+        <div class="chart-wrap">
+          <svg id="g-svg" viewBox="0 0 600 280" preserveAspectRatio="none"></svg>
+          <div id="g-tooltip" class="chart-tooltip" hidden></div>
+        </div>
+        <div class="chart-axis-x" id="g-axis-x"></div>
       </div>
     </section>
 

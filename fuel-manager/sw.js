@@ -1,4 +1,4 @@
-const CACHE_NAME = 'serbatoio-v2';
+const CACHE_NAME = 'serbatoio-v3';
 const ASSETS = [
   './',
   './index.html',
