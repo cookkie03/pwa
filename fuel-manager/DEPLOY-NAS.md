@@ -19,10 +19,10 @@ Il compose pubblica la porta **solo su loopback**:
 
 ```yaml
 ports:
-  - "127.0.0.1:8599:8599"
+  - "127.0.0.1:8600:8599"
 ```
 
-Quindi l'app è raggiungibile **solo dal NAS stesso** su `http://127.0.0.1:8599`.
+Quindi l'app è raggiungibile **solo dal NAS stesso** su `http://127.0.0.1:8600`.
 Non è esposta sulla LAN né sulla tailnet finché non metti davanti un reverse proxy
 (che gira sul NAS e può raggiungere localhost). **Non cambiare questo binding.**
 
@@ -35,13 +35,13 @@ Control Panel → Login Portal → Advanced → Reverse Proxy → Create:
 |-------|----------|--------------|
 | Protocollo | `HTTPS` | `HTTP` |
 | Hostname | `synologyds224.tail234659.ts.net` | `localhost` |
-| Porta | `PORT` (libera, evita 5000/5001) | `8599` |
+| Porta | `PORT` (libera, evita 5000/5001) | `8600` |
 
 Il certificato TLS per l'hostname tailnet è gestito da Synology + pacchetto Tailscale.
 
 ### Opzione B — Tailscale Serve (TLS automatico, più semplice)
 ```
-tailscale serve --bg --https=443 http://127.0.0.1:8599
+tailscale serve --bg --https=443 http://127.0.0.1:8600
 ```
 → disponibile su `https://synologyds224.tail234659.ts.net` senza configurare certificati.
 
@@ -65,4 +65,4 @@ iPhone ("Aggiungi a Home").
 - `dati.json` e `Gestione Benzina.xlsx` NON sono nel repo (gitignored, dati
   personali): vanno copiati a mano nella cartella `data/` sul NAS.
 - Per accesso solo locale (senza tailnet/proxy) basta `docker compose up -d` e
-  aprire `http://127.0.0.1:8599` dal NAS.
+  aprire `http://127.0.0.1:8600` dal NAS.
