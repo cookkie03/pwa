@@ -1,37 +1,97 @@
 {
   "fuel-manager/app.js": {
-    "mtime": 1781571695.4990473,
-    "ast_hash": "9e399e626540c5f581359d0e184357d6",
+    "mtime": 1781891961.8997269,
+    "ast_hash": "1039cf4e5c88d6424a8d2a9f009e313e",
     "semantic_hash": ""
   },
   "fuel-manager/manifest.json": {
-    "mtime": 1781557692.1568232,
-    "ast_hash": "da7bc294e9414edaab68dbe549d81d09",
+    "mtime": 1781891961.8997269,
+    "ast_hash": "751cdff839c34efa403569db916cd6ff",
     "semantic_hash": ""
   },
   "fuel-manager/server.py": {
-    "mtime": 1781594012.8979726,
-    "ast_hash": "511520eb4ee98e8c7784a42ceea8b6a1",
+    "mtime": 1781900238.1312063,
+    "ast_hash": "fd47f25a11b1c9623ed49d8205a769c2",
     "semantic_hash": ""
   },
   "fuel-manager/sw.js": {
-    "mtime": 1781557703.5411048,
-    "ast_hash": "60c5985ad7538d37b9fdb94213f5ca4d",
+    "mtime": 1781891961.8997269,
+    "ast_hash": "c9d99261cc44c3567e0d4f9e7b2ab9de",
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1781557649.0157561,
-    "ast_hash": "d10317abb104cd32dfe032a28a8f6f9c",
+    "mtime": 1781891961.895727,
+    "ast_hash": "2643f8849d1f6537c009089854f6cb08",
     "semantic_hash": ""
   },
   "fuel-manager/docker-compose.yml": {
-    "mtime": 1781594023.21021,
-    "ast_hash": "5e1add0cfcf2d39b483bd5f05166d537",
+    "mtime": 1781891961.8997269,
+    "ast_hash": "60d7ec41fe648952493d4b6e04b0e3dd",
     "semantic_hash": ""
   },
   "fuel-manager/index.html": {
-    "mtime": 1781571471.5859904,
-    "ast_hash": "a02d14732f34a8741192e6a549185a3b",
+    "mtime": 1781891961.8997269,
+    "ast_hash": "3d69f6bde08cb6ad95d992c0d6d48763",
+    "semantic_hash": ""
+  },
+  "DEPLOY.md": {
+    "mtime": 1781891961.895727,
+    "ast_hash": "4e3e718541d9cc630d5eaa453e764311",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-06-19-fuel-manager-frontend-redesign.md": {
+    "mtime": 1781834524.4924793,
+    "ast_hash": "3ff78e95291c50ed193a1873bb7938b9",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-06-19-fuel-manager-frontend-redesign-design.md": {
+    "mtime": 1781834524.4924793,
+    "ast_hash": "676201a2b9887e82bf4c30a6b145b89d",
+    "semantic_hash": ""
+  },
+  "fuel-manager/DEPLOY-NAS.md": {
+    "mtime": 1781891961.895727,
+    "ast_hash": "d702841368b10a0c5e8f2b1dd2afcec7",
+    "semantic_hash": ""
+  },
+  "fuel-manager/apple-touch-icon.png": {
+    "mtime": 1781891961.8997269,
+    "ast_hash": "08dcc1a868eb82431da64312a199f060",
+    "semantic_hash": ""
+  },
+  "fuel-manager/favicon-32.png": {
+    "mtime": 1781891961.8997269,
+    "ast_hash": "0e9c2d70dd5ab242f6d9a7d59112d8f0",
+    "semantic_hash": ""
+  },
+  "fuel-manager/icon-192.png": {
+    "mtime": 1781891961.8997269,
+    "ast_hash": "15a51f5e36151fc64f06ea44b1b84916",
+    "semantic_hash": ""
+  },
+  "fuel-manager/icon-512.png": {
+    "mtime": 1781891961.8997269,
+    "ast_hash": "6d715ea708c17a94d7e6c03df73867be",
+    "semantic_hash": ""
+  },
+  "fuel-manager/icon.svg": {
+    "mtime": 1781891961.8997269,
+    "ast_hash": "12490b0e1a0a575a4fb4e0aa0e0d0068",
+    "semantic_hash": ""
+  },
+  "icon-192.png": {
+    "mtime": 1781560039.3852527,
+    "ast_hash": "f22de8c41d8fe762e1a4b232046254f7",
+    "semantic_hash": ""
+  },
+  "icon-512.png": {
+    "mtime": 1781560039.3852527,
+    "ast_hash": "d75ae515f3e4c95f722eccdc54d66a10",
+    "semantic_hash": ""
+  },
+  "icon.svg": {
+    "mtime": 1781560039.3852527,
+    "ast_hash": "e879f1499c0725dfedfbb71b43a908c7",
     "semantic_hash": ""
   }
 }
